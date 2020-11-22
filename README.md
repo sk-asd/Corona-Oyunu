@@ -1,6 +1,6 @@
 # Corona Oyunu!
 Eklenti Kurulumu<br/>
-1- Verdiğim linkten eklentiyi indirin<br/>
+1- Eklentiyi indirin<br/>
 2-Panelizde veya FTP nizde addons/sourcemod/plugins kısmına gidin ve corona.smx i plugins klasörüne atın.<br/>
 3-Panelizde veya FTP nizde materials/Plugin_Merkezi/Corona kısmına gidin (Böyle bir klasör yoksa oluşturun.) ve indirdiğiniz dosyadaki vmf ve vtf dosyalarına atın.<br/>
 4-Panelizde veya FTP nizde sound/Plugin_Merkezi/Corona kısmına gidin (Böyle bir klasör yoksa oluşturun.) indirdiğiniz dosyadaki mp3 uzantılı dosyaları atın.<br/>
