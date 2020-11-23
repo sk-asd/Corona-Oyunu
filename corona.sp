@@ -10,7 +10,7 @@ ConVar CoronaSaniye = null, CoronaDamage = null, Test = null;
 #pragma semicolon 1
 #pragma newdecls required
 #pragma tabsize 0
-public Plugin myinfo =  { name = "", author = "phiso, ByDexter", description = "", version = "1.1", url = "phiso#3331" };
+public Plugin myinfo =  { name = "", author = "phiso, ByDexter", description = "", version = "1.1", url = "phiso#3331 - https://pluginmerkezi.com" };
 public void OnMapStart()
 {
 	char mapismi[128];
