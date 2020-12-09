@@ -3,9 +3,8 @@
 #include <sdktools>
 #include <cstrike>
 #include <warden>
-#include <autoexecconfig>
 #include <overlays>
-bool coronali[MAXPLAYERS], OyunOynaniyor; 
+bool coronali[MAXPLAYERS], OyunOynaniyor = false; 
 Handle CoronaTimer[MAXPLAYERS] = null;
 ConVar CoronaSaniye = null, CoronaDamage = null;
 #pragma semicolon 1
@@ -14,17 +13,14 @@ ConVar CoronaSaniye = null, CoronaDamage = null;
 public Plugin myinfo =  { name = "", author = "phiso", description = "", version = "2.0", url = "phiso#3331" };
 public void OnMapStart()
 {
-	char mapismi[128];
+	char mapismi[512];
 	GetCurrentMap(mapismi, sizeof(mapismi));
-	char EklentiIsmi[128];
-	GetPluginFilename(INVALID_HANDLE, EklentiIsmi, sizeof(EklentiIsmi));
 	if (StrContains(mapismi, "jb_", false) != 0 && StrContains(mapismi, "jail_", false) != 0 && StrContains(mapismi, "ba_jail", false) != 0)
 	{
-		ServerCommand("sm plugins unload %s", EklentiIsmi);
+		SetFailState("[CORONA] Bu plugin sadece ve sadece jailbreak modunda calismaktadir.");
 	}
 	else
 	{
-		ServerCommand("sm plugins load %s", EklentiIsmi);	
 		AddFileToDownloadsTable("sound/Plugin_Merkezi/Corona/merhaba_v1.mp3");
 		PrecacheSound("Plugin_Merkezi/Corona/merhaba_v1.mp3");
 		AddFileToDownloadsTable("sound/Plugin_Merkezi/Corona/ciglik.mp3");
@@ -35,17 +31,17 @@ public void OnMapStart()
 }
 public void OnPluginStart()
 {
-	AutoExecConfig_SetCreateFile(true);
-	AutoExecConfig_SetFile("Plugin_Merkezi_Corona", "Plugin_Merkezi");
 	RegConsoleCmd("sm_corona", CoronaBaslat);
 	RegConsoleCmd("sm_coronadur", CoronaSifirla);
+	
 	HookEvent("player_death", Oyuncu_Oldugunde);
 	HookEvent("round_end", ElBasladiBitti);
 	HookEvent("round_start", ElBasladiBitti);
-	CoronaSaniye = AutoExecConfig_CreateConVar("corona_vurma_saniye", "0.7", "Kaç saniyede bir canı gitsin");
-	CoronaDamage = AutoExecConfig_CreateConVar("corona_hasar", "3", "Kaç canı gitsin?");
-	AutoExecConfig_ExecuteFile();
-	AutoExecConfig_CleanFile();
+	
+	CoronaSaniye = CreateConVar("corona_vurma_saniye", "0.7", "Kaç saniyede bir canı gitsin");
+	CoronaDamage = CreateConVar("corona_hasar", "3", "Kaç canı gitsin?");
+	
+	AutoExecConfig(true, "Plugin_Merkezi_Corona", "Plugin_Merkezi");
 }
 public Action CoronaBaslat(int client, int args)
 {
@@ -193,7 +189,6 @@ public Action ElBasladiBitti(Event event, const char[] name, bool dontBroadcast)
 		{
 			coronali[i] = false;
 			delete CoronaTimer[i];
-			SetEntPropFloat(i, Prop_Data, "m_flLaggedMovementValue", 1.0);
 			SetEntityRenderColor(i, 255, 255, 255, 255);
 			SDKUnhook(i, SDKHook_OnTakeDamage, OnTakeDamage);
 			StopSound(i, SNDCHAN_AUTO, "Plugin_Merkezi/Corona/merhaba_v1.mp3");
