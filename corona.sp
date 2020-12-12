@@ -13,6 +13,8 @@ ConVar CoronaSaniye = null, CoronaDamage = null;
 public Plugin myinfo =  { name = "", author = "phiso", description = "", version = "2.0", url = "phiso#3331" };
 public void OnMapStart()
 {
+	char map[32];
+	GetCurrentMap(map, sizeof(map));
 	if (strncmp(map, "jb_", 3, false) != 0 && strncmp(map, "jail_", 5, false) != 0 && strncmp(map, "ba_jail", 3, false) != 0)
 	{
 		SetFailState("[CORONA] Corona sadece ve sadece jailbreak modunda calisir.");
