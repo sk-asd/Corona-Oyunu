@@ -4,7 +4,7 @@
 #include <cstrike>
 #include <warden>
 #include <overlays>
-bool coronali[MAXPLAYERS], OyunOynaniyor = false; 
+bool coronali[MAXPLAYERS], OyunOynaniyor = false;
 Handle CoronaTimer[MAXPLAYERS] = null;
 ConVar CoronaSaniye = null, CoronaDamage = null;
 #pragma semicolon 1
@@ -13,21 +13,22 @@ ConVar CoronaSaniye = null, CoronaDamage = null;
 public Plugin myinfo =  { name = "", author = "phiso", description = "", version = "2.0", url = "phiso#3331" };
 public void OnMapStart()
 {
-	char mapismi[512];
-	GetCurrentMap(mapismi, sizeof(mapismi));
-	if (StrContains(mapismi, "jb_", false) != 0 && StrContains(mapismi, "jail_", false) != 0 && StrContains(mapismi, "ba_jail", false) != 0)
+	if (strncmp(map, "jb_", 3, false) != 0 && strncmp(map, "jail_", 5, false) != 0 && strncmp(map, "ba_jail", 3, false) != 0)
 	{
-		SetFailState("[CORONA] Bu plugin sadece ve sadece jailbreak modunda calismaktadir.");
-	}
-	else
-	{
+		SetFailState("[CORONA] Corona sadece ve sadece jailbreak modunda calisir.");
 		AddFileToDownloadsTable("sound/Plugin_Merkezi/Corona/merhaba_v1.mp3");
 		PrecacheSound("Plugin_Merkezi/Corona/merhaba_v1.mp3");
 		AddFileToDownloadsTable("sound/Plugin_Merkezi/Corona/ciglik.mp3");
 		PrecacheSound("Plugin_Merkezi/Corona/ciglik.mp3");
 		AddFileToDownloadsTable("materials/Plugin_Merkezi/Corona/coronaoldun.vmt");
 		AddFileToDownloadsTable("materials/Plugin_Merkezi/Corona/coronaoldun.vtf");
-	}	
+	}
+	AddFileToDownloadsTable("sound/Plugin_Merkezi/Corona/merhaba_v1.mp3");
+	PrecacheSound("Plugin_Merkezi/Corona/merhaba_v1.mp3");
+	AddFileToDownloadsTable("sound/Plugin_Merkezi/Corona/ciglik.mp3");
+	PrecacheSound("Plugin_Merkezi/Corona/ciglik.mp3");
+	AddFileToDownloadsTable("materials/Plugin_Merkezi/Corona/coronaoldun.vmt");
+	AddFileToDownloadsTable("materials/Plugin_Merkezi/Corona/coronaoldun.vtf");
 }
 public void OnPluginStart()
 {
@@ -110,8 +111,8 @@ public Action Oyuncu_Oldugunde(Event event, const char[] name, bool dontBroadcas
 						PrintToChat(i, "[SM] \x05Oyunu \x0B%s \x05Kazandı!", Kazanan_Ismi);
 					}
 					StopSound(i, SNDCHAN_AUTO, "Plugin_Merkezi/Corona/merhaba_v1.mp3");
-				}	
-			}	
+				}
+			}
 		}
 	}
 }
@@ -131,7 +132,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 			EkranTitreme(victim, 5.0, 9000.0, 4.0, 40.0);
 			SetEntityRenderColor(victim, 0, 255, 0, 255);
 			damage = 0.0;
-		}	
+		}
 	}
 }
 public Action CoronaVur(Handle Timer, int client)
@@ -139,13 +140,13 @@ public Action CoronaVur(Handle Timer, int client)
 	if (coronali[client])
 	{
 		int health = GetClientHealth(client) - CoronaDamage.IntValue;
-		if(health <= 0)
+		if (health <= 0)
 		{
 			ForcePlayerSuicide(client);
 			return;
 		}
 		SetEntityHealth(client, health);
-	}	
+	}
 }
 public Action CoronaSifirla(int client, int args)
 {
@@ -174,7 +175,7 @@ public Action CoronaSifirla(int client, int args)
 		else
 		{
 			PrintToChat(client, "[SM] \x05Şuan bir oyun oynanmıyor.");
-		}		
+		}
 	}
 	else
 	{
@@ -192,7 +193,7 @@ public Action ElBasladiBitti(Event event, const char[] name, bool dontBroadcast)
 			SetEntityRenderColor(i, 255, 255, 255, 255);
 			SDKUnhook(i, SDKHook_OnTakeDamage, OnTakeDamage);
 			StopSound(i, SNDCHAN_AUTO, "Plugin_Merkezi/Corona/merhaba_v1.mp3");
-			OyunOynaniyor = false;	
+			OyunOynaniyor = false;
 		}
 	}
-}void EkranTitreme(int client, float Amplitude, float Radius, float Duration, float Frequency){float ClientOrigin[3];int Ent = CreateEntityByName("env_shake");if (DispatchSpawn(Ent)){DispatchKeyValueFloat(Ent, "amplitude", Amplitude);DispatchKeyValueFloat(Ent, "radius", Radius);DispatchKeyValueFloat(Ent, "duration", Duration);DispatchKeyValueFloat(Ent, "frequency", Frequency);SetVariantString("spawnflags 8");AcceptEntityInput(Ent, "AddOutput");AcceptEntityInput(Ent, "StartShake", client);GetClientAbsOrigin(client, ClientOrigin);TeleportEntity(Ent, ClientOrigin, NULL_VECTOR, NULL_VECTOR);}}stock int RastgeleKisi() { int[] clients = new int[MaxClients]; int clientCount; for (int i = 1; i <= MaxClients; i++) { if (IsClientInGame(i) && (GetClientTeam(i) == CS_TEAM_T) && (IsPlayerAlive(i))) { clients[clientCount++] = i; } } return (clientCount == 0) ? -1 : clients[GetRandomInt(0, clientCount - 1)]; }void Give_Effect(int client, int Renk[4]) { int clients[1]; clients[0] = client; Handle message = StartMessageEx(GetUserMessageId("Fade"), clients, 1, 0); Protobuf pb = UserMessageToProtobuf(message); pb.SetInt("duration", 200); pb.SetInt("hold_time", 40); pb.SetInt("flags", 17); pb.SetColor("clr", Renk); EndMessage(); } void YerdekiSilahlariSil(){int g_WeaponParent = FindSendPropInfo("CBaseCombatWeapon", "m_hOwnerEntity");int maxent = GetMaxEntities();char weapon[64];for (int i = MaxClients; i < maxent; i++){if (IsValidEdict(i) && IsValidEntity(i)){GetEdictClassname(i, weapon, sizeof(weapon)); if ((StrContains(weapon, "weapon_") != -1 || StrContains(weapon, "item_") != -1) && GetEntDataEnt2(i, g_WeaponParent) == -1)RemoveEdict(i);}}}void SilahlariSil(int client){for(int j = 0; j < 5; j++){int weapon = GetPlayerWeaponSlot(client, j);if(weapon != -1){RemovePlayerItem(client, weapon);RemoveEdict(weapon);GivePlayerItem(client, "weapon_knife");}}}bool IsValidClient(int iClient){ if (iClient <= 0 || iClient > MaxClients || !IsClientInGame(iClient)) { return false; } else { return true; } }
+} void EkranTitreme(int client, float Amplitude, float Radius, float Duration, float Frequency) { float ClientOrigin[3]; int Ent = CreateEntityByName("env_shake"); if (DispatchSpawn(Ent)) { DispatchKeyValueFloat(Ent, "amplitude", Amplitude); DispatchKeyValueFloat(Ent, "radius", Radius); DispatchKeyValueFloat(Ent, "duration", Duration); DispatchKeyValueFloat(Ent, "frequency", Frequency); SetVariantString("spawnflags 8"); AcceptEntityInput(Ent, "AddOutput"); AcceptEntityInput(Ent, "StartShake", client); GetClientAbsOrigin(client, ClientOrigin); TeleportEntity(Ent, ClientOrigin, NULL_VECTOR, NULL_VECTOR); } } stock int RastgeleKisi() { int[] clients = new int[MaxClients]; int clientCount; for (int i = 1; i <= MaxClients; i++) { if (IsClientInGame(i) && (GetClientTeam(i) == CS_TEAM_T) && (IsPlayerAlive(i))) { clients[clientCount++] = i; } } return (clientCount == 0) ? -1 : clients[GetRandomInt(0, clientCount - 1)]; } void Give_Effect(int client, int Renk[4]) { int clients[1]; clients[0] = client; Handle message = StartMessageEx(GetUserMessageId("Fade"), clients, 1, 0); Protobuf pb = UserMessageToProtobuf(message); pb.SetInt("duration", 200); pb.SetInt("hold_time", 40); pb.SetInt("flags", 17); pb.SetColor("clr", Renk); EndMessage(); } void YerdekiSilahlariSil() { int g_WeaponParent = FindSendPropInfo("CBaseCombatWeapon", "m_hOwnerEntity"); int maxent = GetMaxEntities(); char weapon[64]; for (int i = MaxClients; i < maxent; i++) { if (IsValidEdict(i) && IsValidEntity(i)) { GetEdictClassname(i, weapon, sizeof(weapon)); if ((StrContains(weapon, "weapon_") != -1 || StrContains(weapon, "item_") != -1) && GetEntDataEnt2(i, g_WeaponParent) == -1)RemoveEdict(i); } } } void SilahlariSil(int client) { for (int j = 0; j < 5; j++) { int weapon = GetPlayerWeaponSlot(client, j); if (weapon != -1) { RemovePlayerItem(client, weapon); RemoveEdict(weapon); GivePlayerItem(client, "weapon_knife"); } } } bool IsValidClient(int iClient) { if (iClient <= 0 || iClient > MaxClients || !IsClientInGame(iClient)) { return false; } else { return true; } } 
